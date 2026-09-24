@@ -24,8 +24,8 @@ def get_stats(
     now = datetime.now(timezone.utc)
     since = now - timedelta(days=7)
     lots = db.query(DyeLot).filter(DyeLot.started_at >= since).all()
-    # 埋点：整型加总
-    fabric_sum = sum(int(x.fabric_kg) for x in lots)
+    # 保留小数加总，四舍五入到 2 位避免浮点误差
+    fabric_sum = round(sum(x.fabric_kg for x in lots), 2)
     return DashboardStats(
         dye_house_total=db.query(func.count(DyeHouse.id)).scalar() or 0,
         vat_ready_count=db.query(func.count(Vat.id)).filter(Vat.status == "ready").scalar() or 0,
