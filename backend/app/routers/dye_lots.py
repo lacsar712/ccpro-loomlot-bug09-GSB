@@ -45,7 +45,7 @@ def create_dye_lot(
     item = DyeLot(
         vat_id=payload.vat_id,
         recipe_name=payload.recipe_name,
-        fabric_kg=float(int(payload.fabric_kg)),  # 截断小数
+        fabric_kg=payload.fabric_kg,
         started_at=payload.started_at,
         operator_name=payload.operator_name,
     )
@@ -79,8 +79,6 @@ def update_dye_lot(
     if not item:
         raise HTTPException(status_code=404, detail="染程不存在")
     data = payload.model_dump(exclude_unset=True)
-    if "fabric_kg" in data and data["fabric_kg"] is not None:
-        data["fabric_kg"] = float(int(data["fabric_kg"]))
     if "vat_id" in data and data["vat_id"] != item.vat_id:
         vat = db.query(Vat).filter(Vat.id == data["vat_id"]).first()
         if not vat:
